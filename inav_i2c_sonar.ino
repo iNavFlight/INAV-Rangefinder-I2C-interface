@@ -4,7 +4,10 @@
 #define I2C_SLAVE_ADDRESS 0x14
 
 #define MAX_READOUT_TIME 5 //in ms
-#define PULSE_TIMEOUT 58000 //this is an equivalent of 10 meters range
+
+#define PULSE_TO_CM 58
+#define MAX_RANGE 400 //Range of 4 meters
+#define PULSE_TIMEOUT (MAX_RANGE * PULSE_TO_CM) //this is an equivalent of 10 meters range
 
 #define DEBUG;
 
@@ -108,7 +111,7 @@ void setup() {
 }
 
 long microsecondsToCentimeters(long microseconds){
-  return microseconds / 29 / 2;
+  return microseconds / PULSE_TO_CM;
 }
 
 void loop() {
