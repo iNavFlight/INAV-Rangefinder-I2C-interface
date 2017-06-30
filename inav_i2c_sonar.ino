@@ -4,9 +4,13 @@
 #define I2C_SLAVE_ADDRESS 0x14
 
 #define MAX_READOUT_TIME 5 //in ms
+#define PULSE_TIMEOUT 58000 //this is an equivalent of 10 meters range
+
+#define DEBUG;
 
 #define TRIGGER_PIN 3
 #define ECHO_PIN 4
+#define LED_PIN 1
 
 #include <TinyWireS.h>
 #include <avr/sleep.h>
@@ -89,6 +93,7 @@ void requestEvent()
 void setup() {
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
 
   /*
    * Setup I2C
@@ -125,8 +130,16 @@ void loop() {
     delayMicroseconds(10);
     digitalWrite(TRIGGER_PIN, LOW);
 
-    long duration = pulseIn(ECHO_PIN, HIGH);
+    long duration = pulseIn(ECHO_PIN, HIGH, PULSE_TIMEOUT);
     uint16_t cm = (uint16_t) microsecondsToCentimeters(duration);
+
+#ifdef DEBUG
+    if (cm <10) {
+      digitalWrite(LED_PIN, HIGH);
+    } else {
+      digitalWrite(LED_PIN, LOW);
+    }
+ #endif
     
     i2c_regs[0] = cm >> 8;
     i2c_regs[1] = cm & 0xFF;
