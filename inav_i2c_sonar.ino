@@ -15,6 +15,9 @@
 #define ECHO_PIN 4
 #define LED_PIN 1
 
+#define STATUS_OK 0
+#define STATUS_OUT_OF_RANGE 1
+
 #include <TinyWireS.h>
 #include <avr/sleep.h>
 #include <avr/wdt.h>
@@ -25,8 +28,9 @@
 
 volatile uint8_t i2c_regs[] =
 {
-    0, //older 8
-    0 //younger 8
+    0, //status
+    0, //older 8 of distance
+    0, //younger 8 of distance
 };
 
 const byte reg_size = sizeof(i2c_regs);
@@ -83,14 +87,48 @@ volatile byte reg_position = 0;
 void requestEvent()
 {  
 
-  if (millis() - lastRequestMillis > MAX_READOUT_TIME || reg_position >= reg_size) {
-    reg_position = 0;
-  }
+//  if (millis() - lastRequestMillis > MAX_READOUT_TIME || reg_position >= reg_size) {
+//    reg_position = 0;
+//  }
   
   TinyWireS.send(i2c_regs[reg_position]);
 
-  reg_position++;
+//  reg_position++;
   lastRequestMillis = millis();
+}
+
+void receiveEvent(uint8_t howMany) {
+
+    if (howMany < 1) {
+        // Sanity-check
+        return;
+    }
+
+    if (howMany > TWI_RX_BUFFER_SIZE)
+    {
+        // Also insane number
+        return;
+    }
+
+    reg_position = TinyWireS.receive();
+
+    howMany--;
+
+    if (!howMany) {
+        // This write was only to set the buffer for next read
+        return;
+    }
+
+    while(howMany--) {
+      TinyWireS.receive();
+//        i2c_regs[reg_position] = TinyWireS.receive();
+//        reg_position++;
+//        if (reg_position >= reg_size)
+//        {
+//            reg_position = 0;
+//
+//        }
+    }
 }
 
 void setup() {
@@ -103,6 +141,7 @@ void setup() {
    */
   TinyWireS.begin(I2C_SLAVE_ADDRESS);
   TinyWireS.onRequest(requestEvent);
+  TinyWireS.onReceive(receiveEvent);
 
   /*
    * Start watchdog timer
@@ -134,6 +173,13 @@ void loop() {
     digitalWrite(TRIGGER_PIN, LOW);
 
     long duration = pulseIn(ECHO_PIN, HIGH, PULSE_TIMEOUT);
+
+    if (duration > 0) {
+      i2c_regs[0] = STATUS_OK;
+    } else {
+      i2c_regs[0] = STATUS_OUT_OF_RANGE;
+    }
+    
     uint16_t cm = (uint16_t) microsecondsToCentimeters(duration);
 
 #ifdef DEBUG
@@ -144,8 +190,8 @@ void loop() {
     }
  #endif
     
-    i2c_regs[0] = cm >> 8;
-    i2c_regs[1] = cm & 0xFF;
+    i2c_regs[1] = cm >> 8;
+    i2c_regs[2] = cm & 0xFF;
     
     wakeCounter = 0;
   }
