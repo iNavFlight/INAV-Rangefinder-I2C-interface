@@ -11,8 +11,8 @@
 
 #define DEBUG;
 
-#define TRIGGER_PIN 3
-#define ECHO_PIN 4
+#define TRIGGER_PIN PB3
+#define ECHO_PIN PB4
 #define LED_PIN 1
 
 #define STATUS_OK 0
