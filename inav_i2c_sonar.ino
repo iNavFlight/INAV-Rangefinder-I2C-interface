@@ -147,6 +147,14 @@ void setup() {
   TinyWireS.onReceive(receiveEvent);
 
   /*
+   * Setup Interrupt for ECHO
+   */
+
+  GIMSK = 0b00100000;    //see datasheet
+  PCMSK = (1 << ECHO_PIN);    //enable int for ECHO_PIN  check this please
+  sei();    
+
+  /*
    * Start watchdog timer
    */
   setup_watchdog(0);
