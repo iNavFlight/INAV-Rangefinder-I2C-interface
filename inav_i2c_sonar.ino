@@ -183,7 +183,7 @@ void loop() {
     delayMicroseconds(10);
     digitalWrite(TRIGGER_PIN, LOW);
 
-    long duration = pulseIn(ECHO_PIN, HIGH, PULSE_TIMEOUT);
+    while(!measurement_done); //wait a little bit if needed
 
     if (duration > 0) {
       i2c_regs[0] = STATUS_OK;
@@ -207,3 +207,18 @@ void loop() {
     wakeCounter = 0;
   }
 }
+
+ISR(PCINT0_vect) {
+     if (digitalRead(ECHO_PIN) == HIGH) {
+         echo_start = micros();
+         measurement_done=false;
+     } 
+     else 
+     {   measurement_done=true;
+        long temp_duration=micros() - echo_start;
+         if(temp_duration>PULSE_TIMEOUT){ duration=0;}
+        else
+         {duration = temp_duration;}
+     }
+}
+
