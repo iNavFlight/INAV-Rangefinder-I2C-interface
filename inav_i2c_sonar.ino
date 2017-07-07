@@ -26,8 +26,8 @@
 #define TWI_RX_BUFFER_SIZE ( 16 )
 #endif
 
-volatile unsigned long lastRequestMillis;
-volatile byte reg_position = 0;
+volatile long duration,echo_start;
+bool measurement_done;
 
 volatile uint8_t i2c_regs[] =
 {
