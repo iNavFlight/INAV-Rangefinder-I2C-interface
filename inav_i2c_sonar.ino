@@ -3,8 +3,6 @@
  */
 #define I2C_SLAVE_ADDRESS 0x14
 
-#define MAX_READOUT_TIME 5 //in ms
-
 #define PULSE_TO_CM 58
 #define MAX_RANGE 400 //Range of 4 meters
 #define PULSE_TIMEOUT (MAX_RANGE * PULSE_TO_CM) //this is an equivalent of 10 meters range
@@ -74,7 +72,6 @@ ISR(WDT_vect) {
   wakeCounter++;
 }
 
-volatile unsigned long lastRequestMillis;
 volatile byte reg_position = 0;
 
 /**
@@ -86,15 +83,13 @@ volatile byte reg_position = 0;
  */
 void requestEvent()
 {  
-
-//  if (millis() - lastRequestMillis > MAX_READOUT_TIME || reg_position >= reg_size) {
-//    reg_position = 0;
-//  }
+  if (reg_position >= reg_size) {
+    reg_position = 0;
+  }
   
   TinyWireS.send(i2c_regs[reg_position]);
 
-//  reg_position++;
-  lastRequestMillis = millis();
+  reg_position++;
 }
 
 void receiveEvent(uint8_t howMany) {
@@ -119,15 +114,9 @@ void receiveEvent(uint8_t howMany) {
         return;
     }
 
+    // Everything above 1 byte is something we do not care, so just get it from bus as send to /dev/null
     while(howMany--) {
       TinyWireS.receive();
-//        i2c_regs[reg_position] = TinyWireS.receive();
-//        reg_position++;
-//        if (reg_position >= reg_size)
-//        {
-//            reg_position = 0;
-//
-//        }
     }
 }
 
