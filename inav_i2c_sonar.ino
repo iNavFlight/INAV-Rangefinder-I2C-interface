@@ -161,9 +161,9 @@ void loop() {
   sleep_disable(); 
 
   /*
-   * Measurement is done every 3rd wakeup, that gives more less 20Hz update rate (48ms)
+   * Measurement is done every 5th wakeup, that gives more less 12Hz update rate (80ms)
    */
-  if (wakeCounter == 3) {
+  if (wakeCounter == 5) {
     
     digitalWrite(TRIGGER_PIN, LOW);
     delayMicroseconds(2);
