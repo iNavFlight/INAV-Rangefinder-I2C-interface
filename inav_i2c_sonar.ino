@@ -3,7 +3,7 @@
  */
 #define I2C_SLAVE_ADDRESS 0x14
 
-#define PULSE_TO_CM 58
+#define PULSE_TO_CM 68
 #define MAX_RANGE 400 //Range of 4 meters
 #define PULSE_TIMEOUT (MAX_RANGE * PULSE_TO_CM) //this is an equivalent of 10 meters range
 
@@ -139,7 +139,8 @@ void setup() {
 }
 
 long microsecondsToCentimeters(long microseconds){
-  return microseconds / PULSE_TO_CM;
+//  return microseconds / PULSE_TO_CM;
+  return (microseconds * 34 / 100 / 2) / 10;
 }
 
 void loop() {
@@ -150,9 +151,9 @@ void loop() {
   sleep_disable(); 
 
   /*
-   * Measurement is done every 5th wakeup, that gives more less 12Hz update rate (80ms)
+   * Measurement is done every 6th wakeup, that gives more less 10Hz update rate (96ms)
    */
-  if (wakeCounter == 5) {
+  if (wakeCounter == 6) {
     
     digitalWrite(TRIGGER_PIN, LOW);
     delayMicroseconds(2);
