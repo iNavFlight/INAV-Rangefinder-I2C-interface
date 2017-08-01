@@ -9,8 +9,8 @@
 
 #define DEBUG;
 
-#define TRIGGER_PIN 3
-#define ECHO_PIN 4
+#define TRIGGER_PIN PB3
+#define ECHO_PIN PB4
 #define LED_PIN 1
 
 #define STATUS_OK 0
@@ -23,6 +23,9 @@
 #ifndef TWI_RX_BUFFER_SIZE
 #define TWI_RX_BUFFER_SIZE ( 16 )
 #endif
+
+volatile long duration,echo_start;
+bool measurement_done;
 
 volatile uint8_t i2c_regs[] =
 {
@@ -133,6 +136,14 @@ void setup() {
   TinyWireS.onReceive(receiveEvent);
 
   /*
+   * Setup Interrupt for ECHO
+   */
+
+  GIMSK = 0b00100000;    //see datasheet
+  PCMSK = (1 << ECHO_PIN);    //enable int for ECHO_PIN  check this please
+  sei();    
+
+  /*
    * Start watchdog timer
    */
   setup_watchdog(0);
@@ -161,7 +172,7 @@ void loop() {
     delayMicroseconds(10);
     digitalWrite(TRIGGER_PIN, LOW);
 
-    long duration = pulseIn(ECHO_PIN, HIGH, PULSE_TIMEOUT);
+    while(!measurement_done); //wait a little bit if needed
 
     if (duration > 0) {
       i2c_regs[0] = STATUS_OK;
@@ -185,3 +196,18 @@ void loop() {
     wakeCounter = 0;
   }
 }
+
+ISR(PCINT0_vect) {
+     if (digitalRead(ECHO_PIN) == HIGH) {
+         echo_start = micros();
+         measurement_done=false;
+     } 
+     else 
+     {   measurement_done=true;
+        long temp_duration=micros() - echo_start;
+         if(temp_duration>PULSE_TIMEOUT){ duration=0;}
+        else
+         {duration = temp_duration;}
+     }
+}
+
