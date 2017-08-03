@@ -1,5 +1,5 @@
 {
     "board": "ATTinyCore:avr:attinyx5",
-    "configuration": "TimerClockSource=default,chip=85,clock=8internal,bod=disable",
+    "configuration": "chip=85,clock=8internal,bod=disable",
     "sketch": "inav_i2c_sonar.ino"
 }
