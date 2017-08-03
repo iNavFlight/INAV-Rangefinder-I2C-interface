@@ -1,13 +1,15 @@
 /*
+ * Decide on rangefinder type here. Only one type should be uncommented
+ */
+ #define USE_US100
+ // #define USE_HCSR04
+
+/*
  * Set I2C Slave address
  */
 #define I2C_SLAVE_ADDRESS 0x14
 
-#define PULSE_TO_CM 58
-#define MAX_RANGE 400 //Range of 4 meters
-#define PULSE_TIMEOUT (MAX_RANGE * PULSE_TO_CM) //this is an equivalent of 10 meters range
-
-#define DEBUG;
+// #define DEBUG;
 
 #define TRIGGER_PIN 3
 #define ECHO_PIN 4
@@ -23,6 +25,24 @@
 #ifndef TWI_RX_BUFFER_SIZE
 #define TWI_RX_BUFFER_SIZE ( 16 )
 #endif
+
+/*
+ * Configuration magic, do not touch
+ */
+#ifdef USE_US100
+  #define PULSE_TO_CM 59 //Multiplier pulse length to distance in [cm]
+  #define MEASUREMENT_PERIOD_RATIO 6 // measurement rate = MEASUREMENT_PERIOD_RATIO * 16, 96ms in this case
+  #define MAX_RANGE 300 //Range of 4 meters
+#endif
+
+#ifdef USE_HCSR04
+  #define PULSE_TO_CM 58 //Multiplier pulse length to distance in [cm]
+  #define MEASUREMENT_PERIOD_RATIO 5 // measurement rate = MEASUREMENT_PERIOD_RATIO * 16, 80ms in this case
+  #define MAX_RANGE 300 //Range of 4 meters
+#endif
+
+#define PULSE_TIMEOUT (MAX_RANGE * PULSE_TO_CM) //this is an equivalent of 4 meters range
+
 
 volatile uint8_t i2c_regs[] =
 {
@@ -139,7 +159,8 @@ void setup() {
 }
 
 long microsecondsToCentimeters(long microseconds){
-  return microseconds / PULSE_TO_CM;
+//  return microseconds / PULSE_TO_CM;
+  return (microseconds * 34 / 100 / 2) / 10;
 }
 
 void loop() {
@@ -150,9 +171,9 @@ void loop() {
   sleep_disable(); 
 
   /*
-   * Measurement is done every 5th wakeup, that gives more less 12Hz update rate (80ms)
+   * Measurement is done every 6th wakeup, that gives more less 10Hz update rate (96ms)
    */
-  if (wakeCounter == 5) {
+  if (wakeCounter == MEASUREMENT_PERIOD_RATIO) {
     
     digitalWrite(TRIGGER_PIN, LOW);
     delayMicroseconds(2);

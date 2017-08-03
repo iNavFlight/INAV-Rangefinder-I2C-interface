@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\empty",
+                "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\tiny",
+                "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\tinymodern",
+                "${workspaceRoot}"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\empty",
+                    "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\tiny",
+                    "C:\\Users\\pspyc\\AppData\\Local\\Arduino15\\packages\\ATTinyCore\\hardware\\avr\\1.1.1\\cores\\tinymodern",
+                    "${workspaceRoot}"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/pspychalski/Library/Arduino15/packages/ATTinyCore/hardware/avr/1.0.6/cores/empty",
+                "/Users/pspychalski/Library/Arduino15/packages/ATTinyCore/hardware/avr/1.0.6/cores/tiny",
+                "/Users/pspychalski/Library/Arduino15/packages/ATTinyCore/hardware/avr/1.0.6/cores/tinyNoMillis"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 2
+}

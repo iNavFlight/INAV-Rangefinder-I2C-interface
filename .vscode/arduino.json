@@ -1,0 +1,5 @@
+{
+    "board": "ATTinyCore:avr:attinyx5",
+    "configuration": "chip=85,clock=8internal,bod=disable",
+    "sketch": "inav_i2c_sonar.ino"
+}
