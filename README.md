@@ -24,3 +24,5 @@ On a hardware level, connection is the same: Echo and Trigger pin. Condition is 
 * [TinyWireS](https://github.com/rambo/TinyWire/tree/master/TinyWireS) library
 * IPS programmer. I use USBasp, but even Arduino as ISP can be used
 * [ATtiny flashing guide](https://quadmeup.com/programming-attiny85-and-attiny45-with-arduino-ide/)
+
+03/12/2017: code modified to run on Arduino Pro Mini 3.3V 8MHz
