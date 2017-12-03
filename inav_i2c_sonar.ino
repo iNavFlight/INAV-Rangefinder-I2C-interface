@@ -1,7 +1,5 @@
 /*
- * 03/12/2017: code modified to run on Arduino Pro Mini 3.3V 8MHz
  * Decide on rangefinder type here. Only one type should be uncommented
- * 
  */
  #define USE_US100
  // #define USE_HCSR04
@@ -20,7 +18,7 @@
 #define STATUS_OK 0
 #define STATUS_OUT_OF_RANGE 1
 
-#include <Wire.h>
+#include <TinyWireS.h>
 #include <avr/sleep.h>
 #include <avr/wdt.h>
 
@@ -79,10 +77,10 @@ void setup_watchdog(int ii) {
 
   MCUSR &= ~(1<<WDRF);
   // start timed sequence
-  WDTCSR |= (1<<WDCE) | (1<<WDE);
+  WDTCR |= (1<<WDCE) | (1<<WDE);
   // set new watchdog timeout value
-  WDTCSR = bb;
-  WDTCSR |= _BV(WDIE);
+  WDTCR = bb;
+  WDTCR |= _BV(WDIE);
 }
 
 volatile uint8_t wakeCounter = 0;
@@ -109,7 +107,7 @@ void requestEvent()
     reg_position = 0;
   }
   
-  Wire.write(i2c_regs[reg_position]);
+  TinyWireS.send(i2c_regs[reg_position]);
 
   reg_position++;
 }
@@ -127,7 +125,7 @@ void receiveEvent(uint8_t howMany) {
         return;
     }
 
-    reg_position = Wire.read();
+    reg_position = TinyWireS.receive();
 
     howMany--;
 
@@ -138,7 +136,7 @@ void receiveEvent(uint8_t howMany) {
 
     // Everything above 1 byte is something we do not care, so just get it from bus as send to /dev/null
     while(howMany--) {
-      Wire.read();
+      TinyWireS.receive();
     }
 }
 
@@ -150,9 +148,9 @@ void setup() {
   /*
    * Setup I2C
    */
-  Wire.begin(I2C_SLAVE_ADDRESS);
-  Wire.onRequest(requestEvent);
-  Wire.onReceive(receiveEvent);
+  TinyWireS.begin(I2C_SLAVE_ADDRESS);
+  TinyWireS.onRequest(requestEvent);
+  TinyWireS.onReceive(receiveEvent);
 
   /*
    * Start watchdog timer
