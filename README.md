@@ -1,3 +1,5 @@
+# Deprecated, do not use, will not work with INAV 2.0 and later
+
 # I2C interface for HC-SR04 and US-100 sonar rangefinder
 
 Most modern flight controllers does not allows to connect HC-SR04 and US-100 rangefinders. Reason in quite simple: not enough pins for quite low priority device. 
